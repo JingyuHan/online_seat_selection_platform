@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html>
+<html>
+<head>
+<title>TYUT三毛话剧社--在线选座</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<link rel="stylesheet" type="text/css" href="css/jquery.seat-charts.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<link href="css/sucaijiayuan.css" rel="stylesheet" type="text/css" />
+<style> 
+  .black_overlay{  display: none;  position: absolute;  top: 0%;  left: 0%;  width: 600px;  height: 400px  background-color: black;  z-index:1001;  -moz-opacity: 0.8;  opacity:.80;  filter: alpha(opacity=80);  }  
+  .white_content {  display: none;  position: absolute;  top: 25%;  left: 25%;  width: 600px;  height: 400px;  padding: 16px;  border: 16px solid orange;  background-color: white;  z-index:1002;  overflow: auto;  }  
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="container">
+    <div id="seat-map">
+      <div class="front-indicator"><h2>舞 台<h2></div>
+    </div>
+    
+  </div>
+  
+</div>
+
+<div class="showbox">
+<h2>座位信息<a class="close" href="#">关闭</a></h2><br/>
+<div id="qrcode" align="center"></div>
+
+</div>
+<div id="zhezhao"></div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/qrcode.js"></script>
+<script src="js/jquery-1.11.0.min.js"></script> 
+<script src="js/jquery.seat-charts.min.js"></script> 
+
+<script>
+			var firstSeatLabel = 1;
+			var temp=null;
+			var un=['1_12', '8_1', '9_1', '10_2'];
+			$(document).ready(function() {
+			
+					
+				
+				var $cart = $('#selected-seats'),
+					$counter = $('#counter'),
+					$total = $('#total'),
+					sc = $('#seat-map').seatCharts({
+					map: [
+						'______ffffffffff_ffffffffffffffffffffff_ffffffffff',
+						'_____fffffffffff_ffffffffffffffffffffff_fffffffffff',
+						'____ffffffffffff_ffffffffffffffffffffff_ffffffffffff',
+						'___fffffffffffff_ffffffffffffffffffffff_fffffffffffff',
+						'___fffffffffffff_ffffffffffffffffffffff_fffffffffffff',
+						'__ffffffffffffff_ffffffffffffffffffffff_ffffffffffffff',
+						'_fffffffffffffff_ffffffffffffffffffffff_fffffffffffffff',
+						'_',
+						'ffffffffffffffff_ffffffffffffffffffffff_ffffffffffffffff',
+						'ffffffffffffffff_ffffffffffffffffffffff_ffffffffffffffff',
+						'ffffffffffffffff_ffffffffffffffffffffff_ffffffffffffffff',
+						'ffffffffffffffff_ffffffffffffffffffffff_ffffffffffffffff',
+						'ffffffffffffffff_ffffffffffffffffffffff_ffffffffffffffff',
+						'ffffffffffffffff_ffffffffffffffffffffff_ffffffffffffffff',
+						'_fffffffffffffff_ffffffffffffffffffffff_fffffffffffffff',
+					],
+					seats: {
+						f: {
+							
+							classes : 'first-class', //your custom CSS class
+						},
+											
+					
+					},
+					naming : {
+						top : false,
+						getLabel : function (character, row, column) {
+							return firstSeatLabel++;
+						},
+					},
+					
+					click: function () {
+						if (this.status() == 'available') {
+							temp=this.settings.id;
+							var qrcode = new QRCode(document.getElementById("qrcode"));
+							qrcode.makeCode(this.settings.id);
+							
+							//document.getElementById('light').style.display='block';
+							
+								var box =300;
+								var th= $(window).scrollTop()+$(window).height()/1.6-box;
+								var h =document.body.clientHeight;
+								var rw =$(window).width()/2-box;
+								$(".showbox").animate({top:th,opacity:'show',width:600,height:340,right:rw},500);
+								$("#zhezhao").css({
+									display:"block",height:$(document).height()
+								});
+							
+							//un.push(this.settings.id);
+							//$('<li>'+this.data().category+this.settings.label+'号座位'+'：<br/>价格：<b>$'+this.data().price+'</b> <a href="#" class="cancel-cart-item">[删除]</a></li>')
+							//	.attr('id','cart-item-'+this.settings.id)
+							//	.data('seatId', this.settings.id)
+							//	.appendTo($cart);
+							//$counter.text(sc.find('selected').length+1);
+							//$total.text(recalculateTotal(sc)+this.data().price);
+							
+							return 'available';
+						} 
+						/*else if (this.status() == 'selected') {
+							//update the counter
+							//$counter.text(sc.find('selected').length-1);
+							//and total
+							//$total.text(recalculateTotal(sc)-this.data().price);
+						
+							//remove the item from our cart
+							$('#cart-item-'+this.settings.id).remove();
+						
+							//seat has been vacated
+							return 'available';
+						} */
+						else if (this.status() == 'unavailable') {
+							//seat has been already booked
+							return 'unavailable';
+						} else {
+							return this.style();
+						}
+					}
+				});
+
+				$(".showbox .close").click(function(){
+					
+					$(this).parents(".showbox").animate({top:0,opacity: 'hide',width:0,height:0,right:0},500);
+					$("#zhezhao").css("display","none");
+					
+					$("#qrcode").empty();
+					
+					
+				});
+				
+				//this will handle "[cancel]" link clicks
+				$('#selected-seats').on('click', '.cancel-cart-item', function () {
+					//let's just trigger Click event on the appropriate seat, so we don't have to repeat the logic here
+					sc.get($(this).parents('li:first').data('seatId')).click();
+				});
+
+				//let's pretend some seats have already been booked
+				
+				//sc.get(['1_12', '8_1', '9_1', '10_2']).status('unavailable');
+				sc.get(un).status('unavailable');
+		
+		});
+/*
+		function recalculateTotal(sc) {
+			var total = 0;
+		
+			//basically find every selected seat and sum its price
+			sc.find('selected').each(function () {
+				console.log(this.settings.label);
+				total += this.data().price;
+			});
+			
+			return total;
+		}
+		*/
+		
+
+
+
+</script>
+		
+
+
+</body>
+</html>

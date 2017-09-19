@@ -1,0 +1,91 @@
+body {
+	font-family: 'Lato', sans-serif;
+	
+  background-image:url(../image/bbg.jpg);
+  
+
+}
+
+.front-indicator {
+	width: 950px;
+	height:50px;
+	margin: 5px 50px 15px 30px;
+	background-color: #f6f6f6;	
+	color: #5a5a5a;
+	text-align: center;
+	padding: 3px;
+	border-radius: 5px;
+	opacity:0.6;
+}
+.wrapper {
+	width: 100%;
+	text-align: center;
+}
+.container {
+	width: 1040px;
+	
+	
+	text-align: center;
+}
+div.seatCharts-cell {
+	#color: #182C4E;
+	height: 25px;
+	width: 25px;
+	line-height: 25px;
+	margin:0px;
+}
+div.seatCharts-seat {
+	color: #FFFFFF;
+	cursor: pointer;	
+}
+div.seatCharts-row {
+	height: 35px;
+	width:100%;
+	
+}
+div.seatCharts-seat.available {
+	background-color: #B9DEA0;
+
+}
+div.seatCharts-seat.available.first-class {
+/* 	background: url(vip.png); */
+	background-color: #3a78c3;
+}
+div.seatCharts-seat.focused {
+	background-color: #76B474;
+}
+
+div.seatCharts-seat.unavailable {
+	background-color: #ccc;
+}
+div.seatCharts-container {
+	
+	width:1040px;
+	height:1116px;
+	
+	
+	
+	
+}
+div.seatCharts-legend {
+	padding-left: 0px;
+	bottom: 0;
+}
+ul.seatCharts-legendList {
+	padding-left: 0px;
+}
+span.seatCharts-legendDescription {
+	margin-left: 5px;
+	line-height: 30px;
+}
+.checkout-button {
+	display: block;
+	margin: 10px 0;
+	font-size: 14px;
+}
+#selected-seats {
+	max-height: 200px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	width: 170px;
+}

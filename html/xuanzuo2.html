@@ -1,0 +1,246 @@
+﻿
+<div class="wrapper">
+  <div class="container">
+    <div id="seat-map">
+      <div class="front-indicator"><h1>舞 台<h1></div>
+    </div>
+    
+  </div>
+  
+</div>
+<div class="showbox">
+<h2>座位信息</h2><br/>
+	<div id="one" align="center">
+		<br/><h1 id="msg"></h1><br/><button id="shut">确定</button>
+	</div>
+	<div id="two" style="display:none">
+		<h1 id="infoseat" align="center"></h1><br/>
+		<h3 align="center">确定选这个座位么？</h3><br/>
+		<div id="yon" align="center"><button id="yes" style="margin-right:50px">确定</button><button id="close" href="#">取消</button></div>
+	</div>
+	<div id="three" style="display:none">
+		<br/><br/><h1 align="center">请稍等，正在提交……</h1>
+	</div>
+	<div id="four" style="display:none">
+		<div id="qrcode" align="center"></div>
+		<h3 align="center">这个二维码中包含了您的相关信息，是领票的凭证，<br/>请您务必用手机拍下来或截图保存，在领票时必须出示该二维码。</h3><br/>
+		<div align="center">
+		<input type="checkbox" id="check">   我知道这张二维码的重要性，已经保存好了！</input><br/>
+		<button id="done">确定</button>
+		</div>
+	</div>
+</div>
+<div id="zhezhao"></div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/qrcode.js"></script>
+<script src="js/jquery-1.11.0.min.js"></script> 
+<script src="js/jquery.seat-charts.min.js"></script> 
+<script src="js/getseat.js"></script>
+<script src="js/seat.js"></script>
+
+<script>
+			var firstSeatLabel = 1;
+			var rseat=null;
+			var id=null;
+			var label=null;
+			$(document).ready(function() {
+			
+					
+				
+				var $cart = $('#selected-seats'),
+					$counter = $('#counter'),
+					$total = $('#total'),
+					sc = $('#seat-map').seatCharts({
+					map: [
+						'_____fff__ffffffffffffffffffff_fff_____',
+						'____ffff_fffffffffffffffffffff_ffff____',
+						'___fffff__ffffffffffffffffffff_fffff___',
+						'___fffff__fffffffffffffffffff__fffff___',
+						'___fffff__fffffffffffffffffff__fffff___',
+						'__ffffff_fffffffffffffffffffff_ffffff__',
+						'__ffffff__ffffffffffffffffffff_ffffff__',
+						'__ffffff_fffffffffffffffffffff_ffffff__',
+						'_fffffff_ffffffffffffffffffff__fffffff_',
+						'_fffffff_fffffffffffffffffffff_fffffff_',
+						'_fffffff_ffffffffffffffffffff__fffffff_',
+						'ffffffff_fffffffffffffffffffff_ffffffff',
+						'ffffffff_ffffffffffffffffffff__ffffffff',
+						'ffffffff_fffffffffffffffffffff_ffffffff',
+						'_',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'___fffff____fffffffffffffff____fffff___',
+						'fffffffffffffffffffffffffffffffffffffff',
+						'fffffffffffffffffffffffffffffffffffffff',
+						'fffffffffffffffffffffffffffffffffffffff',
+						'fffffffffffffffffffffffffffffffffffffff',
+						'fffffffffffffffffffffffffffffffffffffff',
+					],
+					seats: {
+						f: {
+							
+							classes : 'first-class', //your custom CSS class
+						},
+											
+					
+					},
+					naming : {
+						top : false,
+						getLabel : function (character, row, column) {
+							return firstSeatLabel++;
+						},
+					},
+					
+					click: function () {
+						if (this.status() == 'available') {
+								id=this.settings.id;
+								label=this.settings.label;
+								//var th= $(window).scrollTop()+Math.abs($(window).height()-650)/2;
+								var th= $(window).scrollTop()+120;//Math.abs($(window).height()-650)/2;
+								var rw =Math.abs($(window).width()-600)/2;
+								$(".showbox").animate({top:th,opacity:'show',width:600,height:240,left:rw},500);
+								$("#zhezhao").css({
+									display:"block",height:$(document).height()
+								});								
+								
+								$("#one").show();
+								$("#shut").hide();
+								document.getElementById("msg").innerHTML="请稍等，正在尝试锁定……";
+								
+								lockseat(lockok,label);
+								
+								
+								
+								
+							
+								
+
+							return 'unavailable';
+						} 
+						
+						else if (this.status() == 'unavailable') {
+							//seat has been already booked
+							return 'unavailable';
+						} else {
+							return this.style();
+						}
+					}
+				});
+
+				$("#close").click(function(){
+					unlockseat(label);
+					$(this).parents(".showbox").animate({top:0,opacity: 'hide',width:0,height:0,left:0},500);
+					$("#zhezhao").css("display","none");
+					$("#two").hide();
+					sc.get(id).status('available');
+					
+					
+				});
+				$("#shut").click(function(){
+					getsaled(getChanged);
+					$(this).parents(".showbox").animate({top:0,opacity: 'hide',width:0,height:0,left:0},500);
+					$("#zhezhao").css("display","none");
+					$("#msg").empty();
+					$("#one").hide();
+					
+					
+				});
+				
+				$("#yes").click(function(){
+					
+					$("#two").hide();
+					$("#three").show();
+					$("#msg").empty();
+					setsaled(setChanged,id,label,rseat);
+					
+					
+				});
+				
+				$("#done").click(function(){
+					
+					if(document.getElementById("check").checked){
+						
+						getsaled(getChanged);
+						
+						$("#four").hide();
+						$(this).parents(".showbox").animate({top:0,opacity: 'hide',width:0,height:0,right:0},500);
+						$("#zhezhao").css("display","none");
+						$("#qrcode").empty();
+						document.getElementById("check").checked=false;
+						
+					}else{
+						alert("这个二维码中包含了您的相关信息，是领票的凭证，请您务必用手机拍下来或\n用截图保存，在领票时必须出示该二维码。");
+					}
+					
+				});
+				
+				//this will handle "[cancel]" link clicks
+				$('#selected-seats').on('click', '.cancel-cart-item', function () {
+					//let's just trigger Click event on the appropriate seat, so we don't have to repeat the logic here
+					sc.get($(this).parents('li:first').data('seatId')).click();
+				});
+
+				//let's pretend some seats have already been booked
+				
+				//sc.get(['1_12', '8_1', '9_1', '10_2']).status('unavailable');
+				sc.get(un).status('unavailable');
+		
+				function lockok() 
+				{ 
+				if (xmlHttp.readyState==4 || xmlHttp.readyState=="complete")
+				 { 
+					if(xmlHttp.responseText=='1'){
+						document.getElementById("msg").innerHTML="抱歉，这个座位已经被抢走了，重新选一个吧！";
+						$("#shut").show();
+					}else{
+						rseat=getseat(label);
+						document.getElementById("infoseat").innerHTML="您的座位信息是："+rseat.split("_")[0]+"排"+rseat.split("_")[1]+"号";
+						$("#one").hide();
+						$("#two").show();
+					}
+					
+					
+					
+				 } 
+				}
+				function getChanged() 
+				{ 
+				if (xmlHttp.readyState==4 || xmlHttp.readyState=="complete")
+				 { 
+					eval('un=' + xmlHttp.responseText + ';');
+					sc.get(un).status('unavailable');
+					
+				 } 
+				}
+				function setChanged() 
+				{ 
+				if (xmlHttp.readyState==4 || xmlHttp.readyState=="complete")
+				 { 
+					$("#three").hide();
+					$("#four").show();
+					document.getElementById("check").checked=false;
+					$(".showbox").animate({height:450},100);
+					var qrcode = new QRCode(document.getElementById("qrcode"));
+					qrcode.makeCode(rseat);
+					rseat=null;
+					id=null;
+					label=null;
+				 } 
+				}
+		});
+
+		
+</script>
+		
+
+
+</body>
+</html>
