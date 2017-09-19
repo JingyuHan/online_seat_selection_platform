@@ -1,0 +1,2 @@
+# online_seat_selection_platform
+在话剧社当宣传部部长期间，为社团用php写了一个在线选座系统，在阿里云上部署并运行正常。
